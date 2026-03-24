@@ -1,5 +1,9 @@
 from app.workflows.fluxo_automacao import run
 
+"""
+Só começa tudo
+"""
+
 def main():
     try:
         print("Iniciando projeto...")
