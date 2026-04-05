@@ -1,5 +1,5 @@
 from googleapiclient.discovery import build
-from autenticacoes.google_drive import get_credenciais
+from src.autenticacoes.google_drive_autenticacao import get_credenciais
 from googleapiclient.http import MediaIoBaseDownload
 import io
 
