@@ -21,7 +21,7 @@ def listar_arquivos():
         for arq in files:
             nome = arq.get("name", "")
 
-            if nome == mes_atual and sheet_mes_id is None:
+            if nome == mes_atual:
                 sheet_mes_id = arq.get("id")
 
             if nome == "Alunos":

@@ -1,4 +1,5 @@
 import os
+import time
 import gspread
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -46,31 +47,111 @@ class GoogleSheetsServico:
         except Exception as e:
             print(f"Erro no __init__ em google_sheets_servico.py: {e}")
 
-    def ler_aba(self, spreadsheet_id, nome_aba):
-        try:
-            if not self.client:
-                raise Exception("Client não inicializado")
+    def ler_aba(self, spreadsheet_id, nome_aba, tentativas=5):
+        if not spreadsheet_id:
+            raise Exception("❌ spreadsheet_id inválido")
 
-            # 🔹 abre pelo ID (mais seguro)
+        for tentativa in range(tentativas):
+            try:
+                print(f"🔍 Tentando acessar planilha: {spreadsheet_id}")
+
+                planilha = self.client.open_by_key(spreadsheet_id)
+
+                abas = planilha.worksheets()
+
+                aba = next(
+                    (
+                        a
+                        for a in abas
+                        if a.title.strip().lower() == nome_aba.strip().lower()
+                    ),
+                    None,
+                )
+
+                if not aba:
+                    print(f"⚠️ Aba '{nome_aba}' não encontrada")
+                    return []
+
+                dados = aba.get_all_values()
+
+                if not dados or len(dados) < 2:
+                    return []
+
+                header = dados[0]
+                linhas = dados[1:]
+
+                return [dict(zip(header, linha)) for linha in linhas if any(linha)]
+
+            except Exception as e:
+                print(f"🔁 Tentativa {tentativa+1} falhou: {e}")
+
+                # Se for 404, provavelmente ID errado → não adianta retry infinito
+                if "404" in str(e):
+                    raise Exception(
+                        f"❌ ERRO 404: Planilha não encontrada ou sem acesso. ID usado: {spreadsheet_id}"
+                    )
+
+                time.sleep(2)
+
+        raise Exception("❌ Falhou após várias tentativas")
+
+    def criar_aba(self, spreadsheet_id, nome_aba):
+        try:
             planilha = self.client.open_by_key(spreadsheet_id)
 
+            try:
+                planilha.worksheet(nome_aba)
+                print(f"Aba '{nome_aba}' já existe")
+            except:
+                planilha.add_worksheet(title=nome_aba, rows="100", cols="20")
+                print(f"✅ Aba '{nome_aba}' criada")
+
+        except Exception as e:
+            print(f"Erro ao criar aba: {e}")
+
+    def deletar_aba(self, spreadsheet_id, nome_aba):
+        try:
+            planilha = self.client.open_by_key(spreadsheet_id)
+            aba = planilha.worksheet(nome_aba)
+            planilha.del_worksheet(aba)
+
+            print(f"🗑️ Aba '{nome_aba}' deletada")
+
+        except Exception as e:
+            print(f"Erro ao deletar aba: {e}")
+
+    def adicionar_linha(self, spreadsheet_id, nome_aba, valores):
+        try:
+            planilha = self.client.open_by_key(spreadsheet_id)
+            aba = planilha.worksheet(nome_aba)
+
+            aba.append_row(valores)
+
+        except Exception as e:
+            print(f"Erro ao adicionar linha: {e}")
+
+    def deletar_linha(self, spreadsheet_id, nome_aba, valor_nome):
+        try:
+            planilha = self.client.open_by_key(spreadsheet_id)
             aba = planilha.worksheet(nome_aba)
 
             dados = aba.get_all_values()
 
-            if not dados or len(dados) < 2:
-                raise Exception("Planilha vazia ou sem dados")
-
-            header = dados[0]
-            linhas = dados[1:]
-
-            resultado = []
-            for linha in linhas:
-                if any(linha):
-                    registro = dict(zip(header, linha))
-                    resultado.append(registro)
-
-            return resultado
+            for i, linha in enumerate(dados):
+                if linha and linha[0] == valor_nome:
+                    aba.delete_rows(i + 1)
+                    print(f"🗑️ Linha '{valor_nome}' removida")
+                    break
 
         except Exception as e:
-            print(f"Erro no ler_aba em google_sheets_servico.py: {e}")
+            print(f"Erro ao deletar linha: {e}")
+
+    def esperar_planilha(sheets, spreadsheet_id, tentativas=5):
+        for i in range(tentativas):
+            try:
+                planilha = sheets.client.open_by_key(spreadsheet_id)
+                planilha.worksheets()
+                return
+            except:
+                time.sleep(2)
+        raise Exception("Planilha não ficou disponível a tempo")
