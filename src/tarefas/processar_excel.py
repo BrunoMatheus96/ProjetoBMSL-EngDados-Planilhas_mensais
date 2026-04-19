@@ -1,10 +1,16 @@
 import pandas as pd
 
 
-def ler_arquivo_alunos():
+def processar_arquivo():
     try:
         df = pd.read_excel("Alunos.xlsm")
-        print(df.head())
+
+        df = df.dropna(how="all")  # Remove linhas completamente vazias
+        df = df.dropna(axis=1, how="all")  # Remove colunas completamente vazias
+        df = df.apply(
+            lambda x: x.apply(lambda y: y.strip() if isinstance(y, str) else y)
+        )
+
         return df
     except Exception as e:
-        print(f"Erro em ler_arquivo_alunos em processar_excel.py: {e}")
+        print(f"Erro em processar_arquivo em processar_excel.py: {e}")

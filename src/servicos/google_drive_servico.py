@@ -45,7 +45,7 @@ class GoogleDriveServico:
             while not done:
                 done = downloader.next_chunk()
 
-            print("Download concluído ✅")
+            print(" ✅Download concluído")
         except Exception as e:
             print(f"Erro no download_arquivo em google_drive_servico.py: {e}")
 
@@ -99,3 +99,21 @@ class GoogleDriveServico:
             ).execute()
         except Exception as e:
             print(f"Erro no renomear_arquivo em google_drive_servico.py: {e}")
+
+    def buscar_arquivo_na_pasta(self, nome, folder_id):
+        try:
+            results = (
+                self.service.files()
+                .list(
+                    q=f"name = '{nome}' and '{folder_id}' in parents and trashed=false",
+                    fields="files(id, name)",
+                )
+                .execute()
+            )
+
+            files = results.get("files", [])
+            return files[0] if files else None
+
+        except Exception as e:
+            print(f"Erro em buscar_arquivo_na_pasta: {e}")
+            return None
