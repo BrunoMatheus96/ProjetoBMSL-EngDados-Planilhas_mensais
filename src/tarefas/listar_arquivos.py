@@ -1,12 +1,12 @@
 from datetime import datetime
 import locale
 
-from src.tarefas.duplicar_planilha import navegar_no_drive
+from src.tarefas.duplicar_planilha import duplicar_planilha_mes, navegar_no_drive
 
 
 def listar_arquivos():
     try:
-        files = navegar_no_drive()
+        pasta, files = navegar_no_drive()
 
         if not isinstance(files, list):
             raise Exception(f"files inválido: {type(files)}")
@@ -22,12 +22,8 @@ def listar_arquivos():
 
         mes_atual = datetime.today().strftime("%B").lower()
 
-        sheet_mes_id = None
-
         for arq in files:
             nome = arq.get("name", "").strip().lower()
-
-            print("🔍 Verificando arquivo:", nome)
 
             if nome == mes_atual:
                 sheet_mes_id = arq.get("id")
@@ -36,7 +32,7 @@ def listar_arquivos():
         sheet_controle_id = "1ILmNbWWKHAWOg_hDpD-GTN8qAvuw0DDmbp-TxHT5AYI"
 
         if not sheet_mes_id:
-            raise Exception(f"❌ Não encontrou planilha do mês: {mes_atual}")
+            raise Exception(f" ❌Não encontrou planilha do mês: {mes_atual}")
 
         return sheet_mes_id, sheet_controle_id
 

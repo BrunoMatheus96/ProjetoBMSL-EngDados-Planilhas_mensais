@@ -10,7 +10,7 @@ def workflow_automacao_mensal():
         duplicar_planilha_mes()
 
         # Passa os IDs para a função
-        print('\n⚫Validação e sincronizando planilhas')
+        print('\n⚫Validação e sincronização da planilhas')
         # Pega os IDs dinamicamente
         sheet_id_mes, sheet_id_controle = listar_arquivos()
         sincronizar(sheet_id_mes, sheet_id_controle)

@@ -41,7 +41,7 @@ class GoogleSheetsServico:
     def esperar_planilha(self, spreadsheet_id, tentativas=10):
         for i in range(tentativas):
             try:
-                print(f" ⏳Tentativa {i+1} abrindo planilha {spreadsheet_id}")
+                print(f" ⏳Tentativa {i+1} de abrir a planilha: {spreadsheet_id}")
 
                 planilha = self.client.open_by_key(spreadsheet_id)
                 planilha.worksheets()
@@ -56,7 +56,6 @@ class GoogleSheetsServico:
         raise Exception(" ❌Planilha não ficou disponível")
 
     def ler_aba(self, spreadsheet_id, nome_aba, tentativas=5):
-        print("DEBUG ID recebido:", spreadsheet_id, type(spreadsheet_id))
 
         if not spreadsheet_id or not isinstance(spreadsheet_id, str):
             raise Exception(f" ❌spreadsheet_id inválido: {spreadsheet_id}")

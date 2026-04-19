@@ -25,7 +25,7 @@ def navegar_no_drive():
         if not isinstance(files, list):
             raise Exception(f"files inválido: {type(files)}")
 
-        return pasta, list(files)
+        return pasta, files
     except Exception as e:
         print(f"Erro em navegar_no_drive em duplicar_planilha.py: {e}")
 
