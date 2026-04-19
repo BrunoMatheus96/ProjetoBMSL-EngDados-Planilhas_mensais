@@ -50,14 +50,12 @@ def duplicar_planilha_mes():
         primeiro_dia = hoje.replace(day=1)
         mes_anterior = (primeiro_dia - timedelta(days=1)).strftime("%B").capitalize()
 
-        print(f" ➡️Mês anterior: {mes_anterior}")
-        print(f" ➡️Mês atual: {mes_atual}")
-
         # 🔥 busca arquivos depois de definir variáveis
         arquivo_mes_anterior = drive.buscar_arquivo_na_pasta(mes_anterior, pasta)
         arquivo_mes_atual = drive.buscar_arquivo_na_pasta(mes_atual, pasta)
 
         print(" ⏳Validando existência da planilha do mês atual...")
+        print(f"    ➡️Mês atual: {mes_atual}")
 
         if arquivo_mes_atual:
             print(f" 📢Arquivo do mês '{mes_atual}' já existe.")
