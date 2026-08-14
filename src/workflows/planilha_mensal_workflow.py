@@ -7,7 +7,7 @@ def workflow_automacao_mensal():
     try:
         print("▶️Iniciando automação...\n")
 
-        print("  ⚫Duplicação")
+        print("  ⚫Duplicação da planilha mensal")
         duplicar_planilha_mes()
 
         # Passa os IDs para a função
