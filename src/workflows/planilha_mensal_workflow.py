@@ -1,18 +1,17 @@
 from src.tarefas.duplicar_planilha import duplicar_planilha_mes
 from src.tarefas.listar_arquivos import listar_arquivos
 from src.tarefas.sincronizar_google_sheet import sincronizar
-import threading
 
 
 def workflow_automacao_mensal():
     try:
         print("▶️Iniciando automação...\n")
 
-        print("⚫Duplicação")
+        print("  ⚫Duplicação da planilha mensal")
         duplicar_planilha_mes()
 
         # Passa os IDs para a função
-        print("\n⚫Validação e sincronização da planilhas")
+        print("\n  ⚫Validação e sincronização da planilhas")
         # Pega os IDs dinamicamente
         sheet_id_mes, sheet_id_controle = listar_arquivos()
         sincronizar(sheet_id_mes, sheet_id_controle)

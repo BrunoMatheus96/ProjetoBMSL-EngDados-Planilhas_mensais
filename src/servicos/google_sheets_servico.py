@@ -48,8 +48,7 @@ class GoogleSheetsServico:
 
             planilha = self.client.open_by_key(spreadsheet_id)
             self._cache[spreadsheet_id] = planilha
-
-            print(" ✅Planilha disponível")
+            
             return planilha
 
         except Exception as e:
@@ -118,7 +117,7 @@ class GoogleSheetsServico:
             # se já existe
             for ws in worksheets:
                 if ws.title == nome_aba:
-                    print(f" 📢Aba '{nome_aba}' já existe")
+                    print(f"    📢Aba '{nome_aba}' já existe")
                     return ws.id
 
             # pega última aba como template
@@ -141,7 +140,7 @@ class GoogleSheetsServico:
                 + [nova_ws]
             )
 
-            print(f" ✅Aba '{nome_aba}' criada e movida para última posição")
+            print(f"    ✅Aba '{nome_aba}' criada e movida para última posição")
 
             return nova_ws.id
 
@@ -154,7 +153,7 @@ class GoogleSheetsServico:
             aba = planilha.worksheet(nome_aba)
             planilha.del_worksheet(aba)
 
-            print(f" 🗑️Aba '{nome_aba}' deletada")
+            print(f"    🗑️Aba '{nome_aba}' deletada")
 
         except Exception as e:
             print(f"Erro ao deletar aba: {e}")
@@ -170,12 +169,12 @@ class GoogleSheetsServico:
                 existentes = [linha[0] for linha in dados if linha]
 
                 if valores[0] in existentes:
-                    print(f" 📢Linha '{valores[0]}' já existe")
+                    print(f"    📢Linha '{valores[0]}' já existe")
                     return
 
             aba.append_row(valores)
 
-            print(f" ✅Linha '{valores[0]}' criada")
+            print(f"    ✅Linha '{valores[0]}' criada")
 
         except Exception as e:
             print(f"Erro ao adicionar linha: {e}")
@@ -190,7 +189,7 @@ class GoogleSheetsServico:
             for i, linha in enumerate(dados):
                 if linha and linha[0] == valor_nome:
                     aba.delete_rows(i + 1)
-                    print(f" 🗑️Linha '{valor_nome}' removida")
+                    print(f"    🗑️Linha '{valor_nome}' removida")
                     break
 
         except Exception as e:

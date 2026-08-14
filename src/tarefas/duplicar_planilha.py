@@ -54,23 +54,23 @@ def duplicar_planilha_mes():
         arquivo_mes_anterior = drive.buscar_arquivo_na_pasta(mes_anterior, pasta)
         arquivo_mes_atual = drive.buscar_arquivo_na_pasta(mes_atual, pasta)
 
-        print(" ⏳Validando existência da planilha do mês atual...")
-        print(f"    ➡️Mês atual: {mes_atual}")
+        print("    ⏳Validando existência da planilha do mês atual...")
+        print(f"      ➡️Mês atual: {mes_atual}")
 
         if arquivo_mes_atual:
-            print(f" 📢Arquivo do mês '{mes_atual}' já existe.")
+            print(f"    📢Arquivo do mês '{mes_atual}' já existe.")
             return arquivo_mes_atual["id"]
 
         # 🔥 validação obrigatória
         if not arquivo_mes_anterior:
-            raise Exception("❌ Mês anterior não encontrado")
+            raise Exception("    ❌Mês anterior não encontrado")
 
         # 🔥 duplicação
         novo_id = drive.copiar_arquivo(arquivo_mes_anterior["id"])
         drive.renomear_arquivo(novo_id, mes_atual)
 
         time.sleep(10)
-        print(" ✅Duplicado com sucesso")
+        print("    ✅Duplicado com sucesso")
 
         return novo_id
 
