@@ -109,17 +109,6 @@ class GoogleSheetsServico:
 
         raise Exception(" ❌Falhou após várias tentativas")
 
-    def deletar_aba(self, spreadsheet_id, nome_aba):
-        try:
-            planilha = self.client.open_by_key(spreadsheet_id)
-            aba = planilha.worksheet(nome_aba)
-            planilha.del_worksheet(aba)
-
-            print(f"    🗑️Aba '{nome_aba}' deletada")
-
-        except Exception as e:
-            print(f"Erro ao deletar aba: {e}")
-
     def adicionar_linha(
         self, spreadsheet_id, nome_aba, valores, linhas_fixas_no_final=1
     ):
@@ -203,22 +192,6 @@ class GoogleSheetsServico:
 
         except Exception as e:
             print(f"Erro ao inserir linha antes do total: {e}")
-
-    def deletar_linha(self, spreadsheet_id, nome_aba, valor_nome):
-        try:
-            planilha = self.client.open_by_key(spreadsheet_id)
-            aba = planilha.worksheet(nome_aba)
-
-            dados = aba.get_all_values()
-
-            for i, linha in enumerate(dados):
-                if linha and linha[0] == valor_nome:
-                    aba.delete_rows(i + 1)
-                    print(f"    🗑️Linha '{valor_nome}' removida")
-                    break
-
-        except Exception as e:
-            print(f"Erro ao deletar linha: {e}")
 
     def _referencia_aba(self, nome):
         """Formata o nome da aba como o Sheets exige dentro de uma fórmula
