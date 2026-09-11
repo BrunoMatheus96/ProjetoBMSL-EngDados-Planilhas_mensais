@@ -1,4 +1,7 @@
+from src.utils.api_retry import retry_em_quota
+
 class DeletarAbaMixin:
+    @retry_em_quota()
     def deletar_aba(self, spreadsheet_id, nome_aba):
         try:
             planilha = self.client.open_by_key(spreadsheet_id)

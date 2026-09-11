@@ -1,4 +1,7 @@
+from src.utils.api_retry import retry_em_quota
+
 class DeletarLinhaMixin:
+    @retry_em_quota()
     def deletar_linha(self, spreadsheet_id, nome_aba, valor, coluna_busca=0):
         try:
             planilha = self.client.open_by_key(spreadsheet_id)

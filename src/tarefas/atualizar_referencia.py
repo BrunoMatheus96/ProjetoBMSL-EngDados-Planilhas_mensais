@@ -1,9 +1,11 @@
 import gspread
 import re
 from src.utils.formulas import referencia_aba
+from src.utils.api_retry import retry_em_quota
 
 
 class AtualizarReferenciaMixin:
+    @retry_em_quota()
     def atualizar_referencias_formula(self, spreadsheet_id, nome_aba, nome_antigo):
         try:
             planilha = self.client.open_by_key(spreadsheet_id)
