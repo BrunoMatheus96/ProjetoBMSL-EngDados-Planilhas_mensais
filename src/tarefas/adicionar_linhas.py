@@ -26,7 +26,7 @@ class AdicionarLinhaMixin:
                 f'+SOMA.SE({ref}!$A$2:$A$6;"Pendente";{ref}!$B$2:$B$6)'
             )
             formula_vai_receber = (
-                f'=SOMA.SE({ref}!$A$2:$A$6;"Pendente";{ref}!$B$2:$B$6)'
+                f'=SOMA.SE({ref}!$A$2:$A$6;"Concluída";{ref}!$B$2:$B$6)'
             )
 
             valores = list(valores)  # não mexe na lista original do chamador
