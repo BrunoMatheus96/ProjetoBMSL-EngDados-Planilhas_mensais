@@ -4,11 +4,21 @@ import gspread
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from src.tarefas.adicionar_linhas import AdicionarLinhaMixin
+from src.tarefas.atualizar_referencia import AtualizarReferenciaMixin
 from src.tarefas.criar_aba import CriarAbaMixin
+from src.tarefas.deletar_abas import DeletarAbaMixin
+from src.tarefas.deletar_linha import DeletarLinhaMixin
 from src.tarefas.ler_abas import LeituraAbaMixin
 
 
-class GoogleSheetsServico(LeituraAbaMixin, CriarAbaMixin, AdicionarLinhaMixin):
+class GoogleSheetsServico(
+    LeituraAbaMixin,
+    CriarAbaMixin,
+    AdicionarLinhaMixin,
+    DeletarAbaMixin,
+    DeletarLinhaMixin,
+    AtualizarReferenciaMixin
+):
 
     def __init__(self):
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
