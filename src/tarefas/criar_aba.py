@@ -1,7 +1,11 @@
+from src.utils.api_retry import retry_em_quota
+
+
 class CriarAbaMixin:
+    @retry_em_quota()
     def criar_aba(self, spreadsheet_id, nome_aba):
         try:
-            planilha = self.client.open_by_key(spreadsheet_id)
+            planilha = self.esperar_planilha(spreadsheet_id)
             worksheets = planilha.worksheets()
 
             for ws in worksheets:
@@ -10,12 +14,10 @@ class CriarAbaMixin:
                     return ws.id
 
             ultima_aba = worksheets[-1]
-            nome_antigo = ultima_aba.title  # <- guarda o nome do modelo
+            nome_antigo = ultima_aba.title
 
-            nova_aba = ultima_aba.duplicate(new_sheet_name=nome_aba)
-
-            worksheets = planilha.worksheets()
-            nova_ws = next(ws for ws in worksheets if ws.title == nome_aba)
+            # duplicate() já retorna o objeto da aba nova — não precisa buscar de novo
+            nova_ws = ultima_aba.duplicate(new_sheet_name=nome_aba)
 
             planilha.reorder_worksheets(
                 worksheets_in_desired_order=[
@@ -26,7 +28,6 @@ class CriarAbaMixin:
 
             print(f"    ✅Aba '{nome_aba}' criada e movida para última posição")
 
-            # corrige as fórmulas que ainda referenciam a aba-modelo
             self.atualizar_referencias_formula(spreadsheet_id, nome_aba, nome_antigo)
 
             return nova_ws.id

@@ -1,4 +1,5 @@
 import gspread
+from src.utils.formulas import referencia_aba
 
 
 class AdicionarLinhaMixin:
@@ -18,14 +19,14 @@ class AdicionarLinhaMixin:
                     return
 
             nome_aluno = valores[0]
-            ref = self.referencia_aba(nome_aluno)
+            ref = referencia_aba(nome_aluno)
 
             formula_total_a_receber = (
                 f'=SOMA.SE({ref}!$A$2:$A$6;"Concluída";{ref}!$B$2:$B$6)'
                 f'+SOMA.SE({ref}!$A$2:$A$6;"Pendente";{ref}!$B$2:$B$6)'
             )
             formula_vai_receber = (
-                f'=SOMA.SE({ref}!$A$2:$A$6;"Pendente";{ref}!$B$2:$B$6)'
+                f'=SOMA.SE({ref}!$A$2:$A$6;"Concluída";{ref}!$B$2:$B$6)'
             )
 
             valores = list(valores)  # não mexe na lista original do chamador

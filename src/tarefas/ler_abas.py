@@ -1,7 +1,8 @@
 import time
-
+from src.utils.api_retry import retry_em_quota
 
 class LeituraAbaMixin:
+    @retry_em_quota()
     def ler_aba(self, spreadsheet_id, nome_aba, tentativas=5):
 
         if not spreadsheet_id or not isinstance(spreadsheet_id, str):
