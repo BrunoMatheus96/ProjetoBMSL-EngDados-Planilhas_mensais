@@ -3,9 +3,12 @@ import time
 import gspread
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from src.tarefas.adicionar_linhas import AdicionarLinhaMixin
+from src.tarefas.criar_aba import CriarAbaMixin
+from src.tarefas.ler_abas import LeituraAbaMixin
 
 
-class GoogleSheetsServico:
+class GoogleSheetsServico(LeituraAbaMixin, CriarAbaMixin, AdicionarLinhaMixin):
 
     def __init__(self):
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
