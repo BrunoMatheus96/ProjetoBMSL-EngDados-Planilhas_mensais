@@ -13,13 +13,6 @@ class AtualizarReferenciaMixin:
 
             formulas = aba.get(value_render_option="FORMULA")
 
-            for i, linha in enumerate(formulas, start=1):
-                for j, valor in enumerate(linha, start=1):
-                    if isinstance(valor, str) and valor.startswith("="):
-                        print(
-                            f"      [DEBUG] {gspread.utils.rowcol_to_a1(i, j)} -> {valor!r}"
-                        )
-
             ref_nova = referencia_aba(nome_aba)
             padrao = re.compile(
                 r"(?:'"

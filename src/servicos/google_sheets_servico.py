@@ -9,15 +9,17 @@ from src.tarefas.criar_aba import CriarAbaMixin
 from src.tarefas.deletar_abas import DeletarAbaMixin
 from src.tarefas.deletar_linha import DeletarLinhaMixin
 from src.tarefas.ler_abas import LeituraAbaMixin
+from src.tarefas.editar_datas import EditarDatasMixin
 
 
 class GoogleSheetsServico(
     LeituraAbaMixin,
     CriarAbaMixin,
     AdicionarLinhaMixin,
+    AtualizarReferenciaMixin,
     DeletarAbaMixin,
     DeletarLinhaMixin,
-    AtualizarReferenciaMixin
+    EditarDatasMixin,
 ):
 
     def __init__(self):

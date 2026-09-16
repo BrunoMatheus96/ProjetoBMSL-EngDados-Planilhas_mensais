@@ -1,7 +1,7 @@
 from src.servicos.google_sheets_servico import GoogleSheetsServico
 
 
-def sincronizar(sheet_id_mes, sheet_id_controle):
+def sincronizar(sheet_id_mes, sheet_id_controle, arquivo_novo=False):
     try:
 
         if not sheet_id_mes or not sheet_id_controle:
@@ -33,6 +33,13 @@ def sincronizar(sheet_id_mes, sheet_id_controle):
         for aluno in remover:
             sheets.deletar_aba(sheet_id_mes, aluno)
             sheets.deletar_linha(sheet_id_mes, "Total", aluno)
+
+        # se o arquivo do mês já existia, só mexe nas abas recém-criadas agora.
+        # se o arquivo é novo, recalcula todo mundo (datas duplicadas ainda são do mês anterior)
+        alunos_para_editar_datas = set_controle if arquivo_novo else adicionar
+
+        for aluno in alunos_para_editar_datas:
+            sheets.editar_datas(sheet_id_mes, sheet_id_controle, aluno, "Datas")
 
     except Exception as e:
         print(f"Erro em sincronizar: {e}")
