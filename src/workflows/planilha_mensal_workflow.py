@@ -8,13 +8,13 @@ def workflow_automacao_mensal():
         print("▶️Iniciando automação...\n")
 
         print("  ⚫Duplicação da planilha mensal")
-        duplicar_planilha_mes()
+        _, arquivo_novo = duplicar_planilha_mes()
 
         # Passa os IDs para a função
         print("\n  ⚫Validação e sincronização da planilhas")
         # Pega os IDs dinamicamente
         sheet_id_mes, sheet_id_controle = listar_arquivos()
-        sincronizar(sheet_id_mes, sheet_id_controle)
+        sincronizar(sheet_id_mes, sheet_id_controle, arquivo_novo)
 
         print("\n✅Automação finalizada")
     except Exception as e:

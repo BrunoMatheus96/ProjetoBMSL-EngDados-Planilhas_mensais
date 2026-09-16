@@ -34,7 +34,7 @@ def duplicar_planilha_mes():
 
         if arquivo_mes_atual:
             print(f"    📢Arquivo do mês '{mes_atual}' já existe.")
-            return arquivo_mes_atual["id"]
+            return arquivo_mes_atual["id"], False
 
         # 🔥 validação obrigatória
         if not arquivo_mes_anterior:
@@ -47,7 +47,7 @@ def duplicar_planilha_mes():
         time.sleep(10)
         print("    ✅Duplicado com sucesso")
 
-        return novo_id
+        return novo_id, True
 
     except Exception as e:
         print(f"Erro em duplicar_planilha_mes: {e}")
