@@ -5,35 +5,35 @@ from src.utils.api_retry import retry_em_quota
 from src.utils.dias_semana import dias_da_semana
 
 
-class EditarHorariosMixin:
+class VerificarValoresMixin:
     """
-    Confere, aula a aula, se o Horario gravado na aba do aluno bate com o
-    horário cadastrado na planilha de controle (por dia da semana) e corrige
-    só a célula divergente.
+    Confere, aula a aula, se o Valor gravado na aba do aluno bate com o valor
+    cadastrado na planilha de controle (por dia da semana) e corrige só a
+    célula divergente.
 
     Só mexe em linhas com Status "Pendente" — aulas "Concluída" (ou qualquer
-    outro status) nunca têm o Horario alterado, mesmo que esteja diferente.
+    outro status) nunca têm o Valor alterado, mesmo que esteja diferente.
 
-    Igual ao `verificar_valores`, essa função NUNCA mexe em Status, Data ou
-    Valor — só na coluna Horarios. Não insere nem remove linhas.
+    Diferente de `editar_datas`, essa função NUNCA mexe em Status, Data ou
+    Hora — só na coluna Valor.
 
-    Depende de `_parece_data`, já definido em `EditarDatasMixin`. Se
-    `GoogleSheetsServico` já herda esse mixin, o método fica disponível via
-    `self` automaticamente.
+    Depende de `_parece_data` e `_parse_valor_brl`, já definidos em
+    `EditarDatasMixin`. Se `GoogleSheetsServico` já herda esse mixin, os
+    métodos ficam disponíveis via `self` automaticamente.
     """
 
     STATUS_VERIFICAVEL = "pendente"
 
     @retry_em_quota()
-    def editar_horario(
+    def verificar_valores(
         self, spreadsheet_id_mes, spreadsheet_id_controle, nome_aba, coluna_data
     ):
         try:
             if nome_aba.strip().lower() == "total":
-                print("    📢Aba 'Total' não é alterada por editar_horarios")
+                print("    📢Aba 'Total' não é alterada por verificar_valores")
                 return
 
-            # 1) horário esperado por dia da semana, vindo da planilha de controle
+            # 1) valor esperado por dia da semana, vindo da planilha de controle
             entradas = self.ler_aba(spreadsheet_id_controle, "Alunos")
             entradas_aluno = [
                 e
@@ -49,7 +49,7 @@ class EditarHorariosMixin:
 
             mapa_dias = dias_da_semana()
 
-            hora_por_dia_semana = {}
+            valor_por_dia_semana = {}
             for entrada in entradas_aluno:
                 nome_dia = entrada.get("Dia", "").strip().lower()
                 dia_semana = mapa_dias.get(nome_dia)
@@ -60,9 +60,9 @@ class EditarHorariosMixin:
                     )
                     continue
 
-                hora_por_dia_semana[dia_semana] = entrada.get("Hora", "")
+                valor_por_dia_semana[dia_semana] = entrada.get("Valor", "")
 
-            if not hora_por_dia_semana:
+            if not valor_por_dia_semana:
                 print(
                     f"    📢Nenhum dia válido encontrado para '{nome_aba}' na planilha de controle"
                 )
@@ -78,13 +78,13 @@ class EditarHorariosMixin:
                 return
 
             cabecalho = dados[0]
-            if "Horarios" not in cabecalho or coluna_data not in cabecalho:
+            if "Valor" not in cabecalho or coluna_data not in cabecalho:
                 print(
-                    f"    ⚠️Colunas 'Horarios'/'{coluna_data}' não encontradas em '{nome_aba}'"
+                    f"    ⚠️Colunas 'Valor'/'{coluna_data}' não encontradas em '{nome_aba}'"
                 )
                 return
 
-            col_hora = cabecalho.index("Horarios")
+            col_valor = cabecalho.index("Valor")
             col_data = cabecalho.index(coluna_data)
             col_status = (
                 cabecalho.index("Status da aula")
@@ -114,20 +114,18 @@ class EditarHorariosMixin:
                     datetime.strptime(data_str.strip(), "%d/%m/%Y").date().weekday()
                 )
 
-                if dia_semana not in hora_por_dia_semana:
+                if dia_semana not in valor_por_dia_semana:
                     continue
 
-                hora_esperada = hora_por_dia_semana[dia_semana]
-                hora_atual = linha[col_hora] if len(linha) > col_hora else ""
+                valor_esperado = self._parse_valor_brl(valor_por_dia_semana[dia_semana])
+                valor_atual_bruto = linha[col_valor] if len(linha) > col_valor else ""
+                valor_atual = self._parse_valor_brl(valor_atual_bruto)
 
-                if (
-                    hora_atual.strip() != str(hora_esperada).strip()
-                    and hora_esperada != ""
-                ):
+                if valor_atual != valor_esperado and valor_esperado != "":
                     atualizacoes.append(
                         {
-                            "range": gspread.utils.rowcol_to_a1(i, col_hora + 1),
-                            "values": [[hora_esperada]],
+                            "range": gspread.utils.rowcol_to_a1(i, col_valor + 1),
+                            "values": [[valor_esperado]],
                         }
                     )
 
@@ -135,10 +133,10 @@ class EditarHorariosMixin:
             if atualizacoes:
                 aba.batch_update(atualizacoes, value_input_option="USER_ENTERED")
                 print(
-                    f"    ✅{len(atualizacoes)} horário(s) corrigido(s) em '{nome_aba}'"
+                    f"    ✅{len(atualizacoes)} valor(es) corrigido(s) em '{nome_aba}'"
                 )
             else:
-                print(f"    📢Horários de '{nome_aba}' já estão corretos")
+                print(f"    📢Valores de '{nome_aba}' já estão corretos")
 
         except Exception as e:
-            print(f"Erro ao editar horários de '{nome_aba}': {e}")
+            print(f"Erro ao verificar valores de '{nome_aba}': {e}")

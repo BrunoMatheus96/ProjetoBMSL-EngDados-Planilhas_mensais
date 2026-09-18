@@ -10,6 +10,9 @@ from src.tarefas.deletar_abas import DeletarAbaMixin
 from src.tarefas.deletar_linha import DeletarLinhaMixin
 from src.tarefas.ler_abas import LeituraAbaMixin
 from src.tarefas.editar_datas import EditarDatasMixin
+from src.tarefas.mudar_status import AtualizarStatusMixin
+from src.tarefas.verificar_valores import VerificarValoresMixin
+from src.tarefas.editar_horarios import EditarHorariosMixin
 
 
 class GoogleSheetsServico(
@@ -20,6 +23,9 @@ class GoogleSheetsServico(
     DeletarAbaMixin,
     DeletarLinhaMixin,
     EditarDatasMixin,
+    VerificarValoresMixin,
+    EditarHorariosMixin,
+    AtualizarStatusMixin
 ):
 
     def __init__(self):

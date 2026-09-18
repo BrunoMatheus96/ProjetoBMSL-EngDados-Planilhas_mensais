@@ -3,24 +3,7 @@ import gspread
 from datetime import date, datetime
 
 from src.utils.api_retry import retry_em_quota
-
-DIAS_SEMANA = {
-    "segunda": 0,
-    "segunda-feira": 0,
-    "terça": 1,
-    "terca": 1,
-    "terça-feira": 1,
-    "terca-feira": 1,
-    "quarta": 2,
-    "quarta-feira": 2,
-    "quinta": 3,
-    "quinta-feira": 3,
-    "sexta": 4,
-    "sexta-feira": 4,
-    "sábado": 5,
-    "sabado": 5,
-    "domingo": 6,
-}
+from src.utils.dias_semana import dias_da_semana
 
 
 class EditarDatasMixin:
@@ -50,13 +33,16 @@ class EditarDatasMixin:
                 )
                 return
 
-            # 2) calcula todas as ocorrências reais do mês atual, já em ordem cronológica
+            mapa_dias = dias_da_semana()
+
+            # 2) calcula as ocorrências reais do mês atual A PARTIR DE HOJE
+            #    (dias que já passaram no mês não entram na agenda)
             agenda = []
             ultimo_dia_mes = calendar.monthrange(ano, mes)[1]
 
             for entrada in entradas_aluno:
                 nome_dia = entrada.get("Dia", "").strip().lower()
-                dia_semana = DIAS_SEMANA.get(nome_dia)
+                dia_semana = mapa_dias.get(nome_dia)
 
                 if dia_semana is None:
                     print(
@@ -64,7 +50,7 @@ class EditarDatasMixin:
                     )
                     continue
 
-                for dia in range(1, ultimo_dia_mes + 1):
+                for dia in range(hoje.day, ultimo_dia_mes + 1):
                     data = date(ano, mes, dia)
                     if data.weekday() == dia_semana:
                         agenda.append(
